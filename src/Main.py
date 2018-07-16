@@ -1,5 +1,6 @@
 import pygame as pg
 import random
+import time
 
 # Import Files
 import Player as player
@@ -30,6 +31,7 @@ def main():
 
 	running = True
 	while running:
+		start = time.time()
 		for event in pg.event.get():
 			if event.type == pg.QUIT:
 				running = False
@@ -52,6 +54,7 @@ def main():
 			player.update(pg, win, width, height)
 
 		pg.display.update()
+		time.sleep(max(1.0/60 - (time.time() - start), 0))
 
 
 if __name__=="__main__":

@@ -7,8 +7,9 @@ import time
 # In Percent (no decimal)
 x, y = 0, 0
 xm, ym = 0, 0
-size = 120
+size = (50, 120)
 movementSpeed = 1
+jumpCount = 0
 
 image = pg.image.load('Images/StickFigure.png')
 
@@ -16,67 +17,90 @@ calcCol = {}
 def processCollision():
 	global canMoveLR, x, y, calcCol
 	calcCol = map.playerDistanceInAllDirections()
-	calcCol["S"] -= size
+	print(calcCol)
 	return
 
 def processSpeed():
-	global x, y, xm, ym
+	global x, y, xm, ym, jumpCount
 
-	def incrs(a, b):
-		return a + (b if a >= 0 else -b)
-
-	if (xm <= calcCol[("E" if xm > 0 else "W")]):
-		x += xm
-	else:
-		x += incrs(incrs(calcCol[("E" if xm > 0 else "W")], -3) / 10, -1)
-
-	if (ym <= calcCol[("N" if ym > 0 else "S")]):
-		y += ym
-
-	#print(calcCol)
-	if (calcCol["S"] > 0):
-		ym -= 0.006
+#	def incrs(a, b):
+#		return a + (b if a >= 0 else -b)
+#
+#	if (xm <= calcCol[("E" if xm > 0 else "W")]):
+#		x += xm
+#	else:
+#		x += incrs(incrs(calcCol[("E" if xm > 0 else "W")], -3) / 10, -1)
+#
+#	if (ym <= calcCol[("N" if ym > 0 else "S")]):
+#		y += ym
+#	else:
+#		ym = 0
+#		jumpCount = 0
+#
+#	if (calcCol["S"] > 0):
+#		ym -= 0.2
 
 	return
 
 def processInput(pg, win, ww, wh):
-	global x, y, xm, ym, movementSpeed
+	global x, y, xm, ym, movementSpeed, jumpCount
 		
-	movementSpeed = 1
+	movementSpeed = 3
 
 	def getKeyPress(key):
 		return (pg.key.get_pressed()[ord(key)])
 
 
-	if (getKeyPress('a') or getKeyPress('d')):
-		# Left
-		if (getKeyPress('a')):
-			xm = movementSpeed
-	
-		# Right
-		if (getKeyPress('d')):
-			xm = -movementSpeed
-	else:
-		xm = 0
-
+	#if (getKeyPress('a') or getKeyPress('d')):
+	#	# Left
+	#	if (getKeyPress('a')):
+	#		xm = -movementSpeed
+	#
+	#	# Right
+	#	if (getKeyPress('d')):
+	#		xm = movementSpeed
+	#else:
+	#	xm = 0
+	#
 	# Jump
+	#if (getKeyPress('w') and jumpCount < 1):
+	#	ym = 10
+	#	jumpCount += 1
+
 	if (getKeyPress('w')):
-		pass
+		y += 3
+	if (getKeyPress('s')):
+		y -= 3
+	if (getKeyPress('a')):
+		x -= 3
+	if (getKeyPress('d')):
+		x += 3
 
 	return
 
-
+drawnPosOnScreen = []
 def update(pg, win, ww, wh):
 	processCollision()
 	processInput(pg, win, ww, wh)
 	processSpeed()
-	global x, y, image, size
+	global x, y, image, size, drawnPosOnScreen
 
-	ps = int(map.worldUnitToScreen(size))
-	win.blit(pg.transform.scale(image, (ps, ps)), ( int((ww / 2) - (ps / 2)), int(map.worldYToScreen(y)) ))
+	pos = getPlayerPosOnScreen(ww)
+	ps = (pos[2], pos[3])
+	win.blit(pg.transform.scale(image, (pos[3], pos[3])), ( int((ww / 2) - (ps[1] / 2)), int(map.worldYToScreen(y)), ps[0], ps[1] ))
+
+	pg.draw.rect(win, [0, 0, 255], getPlayerPosOnScreen(ww), 1)
 
 	return
 
+def getPlayerPosOnScreen(ww):
+	global size
+	ps = (
+		int(map.worldUnitToScreen(size[0])),
+		int(map.worldUnitToScreen(size[1]))
+	)
+	return ( int((ww / 2) - (ps[0] / 2)), int(map.worldYToScreen(y)), ps[0], ps[1] )
+
 def getCollisionBox():
 	global x, y, size
-	return [x, y, x + size, y + size]
+	return [x, y, x + size[0], y + size[1]]

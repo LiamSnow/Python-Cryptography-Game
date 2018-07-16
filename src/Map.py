@@ -3,6 +3,7 @@
 from Math import Collision as collis
 import Player as player
 import Main as main
+import pygame
 
 from Maps import MENU
 from Maps import LEVEL1
@@ -40,10 +41,9 @@ def playerDistanceInAllDirections():
 		try:
 			if (i.boxPhysics):
 				# Calculate Collision
-				dir, dst = (collis.rectDistance(p, [(i.x1), (i.y1), (i.x2), (i.y2)]))
-				
+				dir, dst = (collis.rectDistance(p, [(i.x1), (i.y1), (i.x2), (i.y2)], pygame))
+
 				if (dir != None and dst != None):
-					#print(dir, dst)
 					# Filter Through Directions
 					for i in dir:
 						if (dst < r[i]):
@@ -64,7 +64,7 @@ def docWH(w, h):
 
 def worldXToScreen(x):
 	global width, height
-	return (width if width < height else height) * ((x + player.x) / 1000)
+	return (width if width < height else height) * ((x - player.x) / 1000) + player.getPlayerPosOnScreen(width)[0]
 
 def worldYToScreen(y):
 	global width, height

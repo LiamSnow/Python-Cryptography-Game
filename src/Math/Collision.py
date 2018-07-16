@@ -30,7 +30,7 @@ def rectOverlapLine(r1, l1):
 	return overlap
 
 # Returns [directionChar, distance_in_world_units]
-def rectDistance(r1, r2):
+def rectDistance(r1, r2, pg):
 	dir = rectangleDir(r1, r2)
 	if (dir != None):
 		def avg(a, b):
@@ -74,7 +74,7 @@ def rectDistance(r1, r2):
 
 def rectangleDir(r1, r2):
 	def numberOverlap(x1, x2, y1, y2):
-		return max(x1, y1) <= min(x2,y2)
+		return max(x1, y1) <= min(x2, y2)
 
 	def avg(a, b):
 		return (a + b) / 2

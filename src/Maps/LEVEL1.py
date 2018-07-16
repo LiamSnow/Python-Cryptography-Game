@@ -13,5 +13,6 @@ def update():
 
 # Data
 data = [
-	elements.ground(-1000, 30, 1000, 0)
+	elements.ground(-1000, 30, 1000, 0),
+	elements.ground(0, 230, 100, 200)
 ]
