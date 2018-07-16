@@ -1,92 +1,82 @@
 import Map as map
+import pygame as pg
+import time
 
 # Player.py
 
 # In Percent (no decimal)
-x, y = 50, 50
-jump = 0
+x, y = 0, 0
+xm, ym = 0, 0
+size = 120
+movementSpeed = 1
+
+image = pg.image.load('Images/StickFigure.png')
+
+calcCol = {}
+def processCollision():
+	global canMoveLR, x, y, calcCol
+	calcCol = map.playerDistanceInAllDirections()
+	calcCol["S"] -= size
+	return
+
+def processSpeed():
+	global x, y, xm, ym
+
+	def incrs(a, b):
+		return a + (b if a >= 0 else -b)
+
+	if (xm <= calcCol[("E" if xm > 0 else "W")]):
+		x += xm
+	else:
+		x += incrs(incrs(calcCol[("E" if xm > 0 else "W")], -3) / 10, -1)
+
+	if (ym <= calcCol[("N" if ym > 0 else "S")]):
+		y += ym
+
+	#print(calcCol)
+	if (calcCol["S"] > 0):
+		ym -= 0.006
+
+	return
 
 def processInput(pg, win, ww, wh):
-	global ProcessMovementRecursionCount
-	ProcessMovementRecursionCount = 0
-	def ProcessMovement(movementSpeed):
-		global x, y, ProcessMovementRecursionCount
-		if (pg.key.get_pressed()[119] or pg.key.get_pressed()[115] or pg.key.get_pressed()[97] or pg.key.get_pressed()[100]):
-			col = map.CalculateCollision(getCollisionBox(True, False)[0], getCollisionBox(True, False)[1], getCollisionBox(True, False)[2], getCollisionBox(True, False)[3], movementSpeed * 2)
+	global x, y, xm, ym, movementSpeed
+		
+	movementSpeed = 1
 
-			# Up
-			if (pg.key.get_pressed()[119] and col[0]):
-				y -= movementSpeed
-			elif not col[0] and ProcessMovementRecursionCount < 3:
-				ProcessMovementRecursionCount += 1
-				ProcessMovement(movementSpeed / 2)
+	def getKeyPress(key):
+		return (pg.key.get_pressed()[ord(key)])
+
+
+	if (getKeyPress('a') or getKeyPress('d')):
+		# Left
+		if (getKeyPress('a')):
+			xm = movementSpeed
 	
-			# Down
-			if (pg.key.get_pressed()[115] and col[2]):
-				y += movementSpeed
-			elif not col[2] and ProcessMovementRecursionCount < 3:
-				ProcessMovementRecursionCount += 1
-				ProcessMovement(movementSpeed / 2)
+		# Right
+		if (getKeyPress('d')):
+			xm = -movementSpeed
+	else:
+		xm = 0
 
-			# Left
-			if (pg.key.get_pressed()[97] and col[3]):
-				x -= movementSpeed
-			elif not col[3] and ProcessMovementRecursionCount < 3:
-				ProcessMovementRecursionCount += 1
-				ProcessMovement(movementSpeed / 2)
-	
-			# Right
-			if (pg.key.get_pressed()[100] and col[1]):
-				x += movementSpeed
-			elif not col[1] and ProcessMovementRecursionCount < 5:
-				ProcessMovementRecursionCount += 1
-				ProcessMovement(movementSpeed / 2)
-
-	ProcessMovement(ww / 5000)
+	# Jump
+	if (getKeyPress('w')):
+		pass
 
 	return
+
 
 def update(pg, win, ww, wh):
-	processInput(pg, win, ww, wh);
-	global x, y
+	processCollision()
+	processInput(pg, win, ww, wh)
+	processSpeed()
+	global x, y, image, size
 
-	pg.draw.rect(win, [0, 0, 0], [x / 100 * ww, y / 100 * wh, ww * 0.1, wh * 0.1], 0)
+	ps = int(map.worldUnitToScreen(size))
+	win.blit(pg.transform.scale(image, (ps, ps)), ( int((ww / 2) - (ps / 2)), int(map.worldYToScreen(y)) ))
 
 	return
 
-def getCollisionBox(bottomOnly=False, includeJump=False):
-	xColSize = 10
-	yColSize = 10
-	if (bottomOnly):
-		if (includeJump):
-			# Bottom Jump
-			return [
-				x, 
-				y - jump + yColSize - 0.4, 
-				x + xColSize, 
-				y - jump + 0.3
-			]
-		else:
-			# Bottom
-			return [
-				x, 
-				y + yColSize - 0.4, 
-				x + xColSize, 
-				y + yColSize + 0.3
-			]
-	elif (includeJump):
-		# Jump
-		return [
-			x, 
-			y - jump, 
-			x + xColSize, 
-			y - jump + yColSize
-		]
-	else:
-		return [
-			x, 
-			y, 
-			x + xColSize, 
-			y + 10
-		]
-
+def getCollisionBox():
+	global x, y, size
+	return [x, y, x + size, y + size]

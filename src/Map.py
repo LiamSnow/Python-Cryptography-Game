@@ -2,6 +2,7 @@
 
 from Math import Collision as collis
 import Player as player
+import Main as main
 
 from Maps import MENU
 from Maps import LEVEL1
@@ -12,7 +13,7 @@ mapObjects = globals()[cm].data
 
 def setMap(map):
 	global cm, mapObjects
-	player.x, player.y = 50, 50
+	player.x, player.y = 0, 500
 	cm = map
 	mapObjects = globals()[cm].data
 	return
@@ -20,31 +21,59 @@ def setMap(map):
 def getMap():
 	return cm
 
-# DESC: Calculates Were An Object Can Move Without Colliding Into Walls
-# @params x1, y1, x2, y2 The Objects Direction (0% - 100% for All) 
-# @param How much you want to move in any peticular direction (0% - 100%)
-# RETURN: 4 Long Boolean Array in which it can move [north, east, south, west]
-def CalculateCollision(x1, y1, x2, y2, movement):
-	r = [True, True, True, True]
+""" Returns {
+	"N": default 1000000,
+	"E": default 1000000,
+	"S": default 1000000,
+	"W": default 1000000
+}"""
+def playerDistanceInAllDirections():
+	p = player.getCollisionBox()
+	r = {
+		"N": 1000000,
+		"E": 1000000,
+		"S": 1000000,
+		"W": 1000000
+	}
+
 	for i in mapObjects:
-		# Only Calculate Collision For Specified Collision Objects
 		try:
-			if i.lineCollision:
-				# North
-				if collis.rectOverlapLine([x1, y1 - movement, x2, y2 - movement], [i.x1 * 100, i.y1 * 100, i.x2 * 100, i.y2 * 100]):
-					r[0] = False
-				# East
-				if collis.rectOverlapLine([x1 + movement, y1, x2 + movement, y2], [i.x1 * 100, i.y1 * 100, i.x2 * 100, i.y2 * 100]):
-					r[1] = False
-				# South
-				if collis.rectOverlapLine([x1, y1 + movement, x2, y2 + movement], [i.x1 * 100, i.y1 * 100, i.x2 * 100, i.y2 * 100]):
-					r[2] = False
-				# West
-				if collis.rectOverlapLine([x1 - movement, y1, x2 - movement, y2], [i.x1 * 100, i.y1 * 100, i.x2 * 100, i.y2 * 100]):
-					r[3] = False
+			if (i.boxPhysics):
+				# Calculate Collision
+				dir, dst = (collis.rectDistance(p, [(i.x1), (i.y1), (i.x2), (i.y2)]))
+				
+				if (dir != None and dst != None):
+					#print(dir, dst)
+					# Filter Through Directions
+					for i in dir:
+						if (dst < r[i]):
+							r[i] = dst
+
 		except AttributeError:
 			pass
+
 	return r
 
 def updateMap():
 	globals()[cm].update()
+
+width, height = 0, 0
+def docWH(w, h):
+	global width, height
+	width, height = w, h
+
+def worldXToScreen(x):
+	global width, height
+	return (width if width < height else height) * ((x + player.x) / 1000)
+
+def worldYToScreen(y):
+	global width, height
+	return (width if width < height else height) * ((-y + (height / 1.1)) / 1000)
+
+def worldCordToScreen(cord):
+	global width, height
+	return [worldXToScreen(cord[0]), worldYToScreen(cord[1])]
+
+def worldUnitToScreen(unit):
+	global width, height
+	return (width if width < height else height) * (unit / 1000)

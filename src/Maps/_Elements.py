@@ -2,16 +2,14 @@ import Player as player
 from Math import Curve as curve
 from Math import Collision as collis
 from Other import Cursors as cursors
+import Map as map
 
 # Map Elements
 
-class door():
-	def __init__(self, x1, y1, x2, y2, callback, _3d=False):
-		self.x1, self.y1, self.x2, self.y2 = x1 / 100, y1 / 100, x2 / 100, y2 / 100
-		self.lineCollision = True
-		self.closed = False
-		self.callback = callback
-		self._3d = _3d
+class ground:
+	def __init__(self, x1, y1, x2, y2):
+		self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
+		self.boxPhysics = True
 
 	# Interaction
 	def processInput(self, evt, pg, win, ww, wh):
@@ -19,113 +17,12 @@ class door():
 
 	# Drawing
 	def update(self, pg, win, ww, wh):
-		if not self.closed:
-			if self._3d:
-				yOff = 0.09
-				xOff = 0.04
-				lineWidth = 4
-				for i in range(0, 2):
-					pg.draw.aalines(win, [0, 0, 0], True, [
-						[self.x1 * ww, self.y1 * wh], [self.x2 * ww, self.y2 * wh],
-						[self.x1 * ww, self.y1 * wh], [(self.x1 + xOff) * ww, (self.y1 - yOff) * wh],
-						[(self.x1 + xOff) * ww, (self.y1 - yOff) * wh], [(self.x2 + xOff) * ww, (self.y2 - yOff) * wh],
-						[(self.x2 + xOff) * ww, (self.y2 - yOff) * wh], [self.x2 * ww, self.y2 * wh]
-					], 2)
-			else:
-				pg.draw.line(win, [0, 0, 0], [self.x1 * ww, self.y1 * wh], [self.x2 * ww, self.y2 * wh], lineWidth)
-		
-		if (collis.rectOverlapLine(player.getCollisionBox(), [self.x1 * 100, self.y1 * 100, self.x2 * 100, self.y2 * 100])):
-			self.callback()
-
-		return
-
-	def close(self):
-		self.closed = True
-		self.lineCollision = False
-
-	def open(self):
-		self.closed = False
-		self.lineCollision = True
-
-class wall():
-	def __init__(self, x1, y1, x2, y2, _3d=False):
-		self.x1, self.y1, self.x2, self.y2 = x1 / 100, y1 / 100, x2 / 100, y2 / 100
-		self.lineCollision = True
-		self._3d = _3d
-
-	# Interaction
-	def processInput(self, evt, pg, win, ww, wh):
-		return
-
-	# Drawing
-	def update(self, pg, win, ww, wh):
-		if self._3d:
-			yOff = 0.09
-			xOff = 0.04
-			pg.draw.polygon(win, [230, 230, 230], [
-				[self.x1 * ww, self.y1 * wh], [self.x2 * ww, self.y2 * wh],
-				[self.x1 * ww, self.y1 * wh], [(self.x1 + xOff) * ww, (self.y1 - yOff) * wh],
-				[(self.x1 + xOff) * ww, (self.y1 - yOff) * wh], [(self.x2 + xOff) * ww, (self.y2 - yOff) * wh],
-				[(self.x2 + xOff) * ww, (self.y2 - yOff) * wh], [self.x2 * ww, self.y2 * wh]
-			], 0)
-			pg.draw.aalines(win, [0, 0, 0], True, [
-				[self.x1 * ww, self.y1 * wh], [self.x2 * ww, self.y2 * wh],
-				[self.x1 * ww, self.y1 * wh], [(self.x1 + xOff) * ww, (self.y1 - yOff) * wh],
-				[(self.x1 + xOff) * ww, (self.y1 - yOff) * wh], [(self.x2 + xOff) * ww, (self.y2 - yOff) * wh],
-				[(self.x2 + xOff) * ww, (self.y2 - yOff) * wh], [self.x2 * ww, self.y2 * wh]
-			], 2)
-		else:
-			# Bottom
-			pg.draw.aaline(win, [0, 0, 0], [self.x1 * ww, self.y1 * wh], [self.x2 * ww, self.y2 * wh], 2)
-		
-		return
-
-class rect():
-	def __init__(self, x1, y1, x2, y2, _3d=False, _3dHeight=5):
-		self.x1, self.y1, self.x2, self.y2 = x1 / 100, y1 / 100, x2 / 100, y2 / 100
-		self._3d = _3d
-		self._3dH = _3dHeight / 100
-
-	# Interaction
-	def processInput(self, evt, pg, win, ww, wh):
-		return
-
-	# Drawing
-	def update(self, pg, win, ww, wh):
-		if (self._3d):
-			yOff = self._3dH
-			xOff = -self._3dH / 2.5
-			pg.draw.polygon(win, [230, 230, 230], [
-				[(self.x2) * ww, (self.y1) * wh],
-				[(self.x2) * ww, (self.y2) * wh],
-				[(self.x2 + xOff) * ww, (self.y2 + yOff) * wh],
-				[(self.x1 + xOff) * ww, (self.y2 + yOff) * wh],
-				[(self.x1 + xOff) * ww, (self.y1 + yOff) * wh],
-				[(self.x1) * ww, (self.y1) * wh]
-			], 0)
-			pg.draw.aalines(win, [230, 230, 230], True, [
-				[(self.x2) * ww, (self.y1) * wh],
-				[(self.x2) * ww, (self.y2) * wh],
-				[(self.x2 + xOff) * ww, (self.y2 + yOff) * wh],
-				[(self.x1 + xOff) * ww, (self.y2 + yOff) * wh],
-				[(self.x1 + xOff) * ww, (self.y1 + yOff) * wh],
-				[(self.x1) * ww, (self.y1) * wh]
-			], 2)
-			pg.draw.aalines(win, [0, 0, 0], False, [
-				[(self.x1) * ww, (self.y1) * wh],
-				[(self.x1) * ww, (self.y2) * wh],
-				[(self.x1 + xOff) * ww, (self.y2 + yOff) * wh],
-				[(self.x1) * ww, (self.y2) * wh],
-				[(self.x2) * ww, (self.y2) * wh]
-			], 2)
-		else:
-			pg.draw.aalines(win, [0, 0, 0], True, [
-				[(self.x1) * ww, (self.y1) * wh],
-				[(self.x2) * ww, (self.y1) * wh],
-				[(self.x2) * ww, (self.y2) * wh],
-				[(self.x1) * ww, (self.y2) * wh]
-			], 2)
-
+		pg.draw.polygon(win, [0, 0, 0], [
+			map.worldCordToScreen([self.x1, self.y1]),
+			map.worldCordToScreen([self.x2, self.y1]),
+			map.worldCordToScreen([self.x2, self.y2]),
+			map.worldCordToScreen([self.x1, self.y2])
+		], 0)
 		return
 
 class button:

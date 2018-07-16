@@ -10,6 +10,8 @@ import Map as map
 def create_window(width, height):
 	win = pg.display.set_mode((width, height), pg.RESIZABLE)
 
+	map.docWH(width, height)
+
 	win.fill((255, 255, 255))
 
 	pg.display.set_caption("Program")
@@ -48,10 +50,6 @@ def main():
 
 		if (map.getMap() != "MENU"):
 			player.update(pg, win, width, height)
-
-		#pg.mouse.get_pos()
-		#pg.mouse.get_pressed()
-		#pg.draw.rect()
 
 		pg.display.update()
 
