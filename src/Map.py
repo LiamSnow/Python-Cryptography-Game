@@ -3,12 +3,13 @@
 from Math import Collision as collis
 import Player as player
 import Main as main
-import pygame
+import pygame as pg
 
 from Maps import MENU
 from Maps import LEVEL1
 from Maps import LEVEL2
 
+# Map Stuff
 cm = "MENU"
 mapObjects = globals()[cm].data
 
@@ -22,6 +23,16 @@ def setMap(map):
 def getMap():
 	return cm
 
+def updateMap():
+	globals()[cm].update()
+
+width, height, win = 0, 0, None
+def docWH(w, h, window):
+	global width, height, win
+	width, height = w, h
+	win = window
+
+# Physics
 """ Returns {
 	"N": default 1000000,
 	"E": default 1000000,
@@ -41,7 +52,7 @@ def playerDistanceInAllDirections():
 		try:
 			if (i.boxPhysics):
 				# Calculate Collision
-				dir, dst = (collis.rectDistance(p, [(i.x1), (i.y1), (i.x2), (i.y2)], pygame))
+				dir, dst = (collis.rectDistance(p, [(i.x1), (i.y1), (i.x2), (i.y2)]))
 
 				if (dir != None and dst != None):
 					# Filter Through Directions
@@ -54,14 +65,7 @@ def playerDistanceInAllDirections():
 
 	return r
 
-def updateMap():
-	globals()[cm].update()
-
-width, height = 0, 0
-def docWH(w, h):
-	global width, height
-	width, height = w, h
-
+# Cordinates
 def worldXToScreen(x):
 	global width, height
 	return (width if width < height else height) * ((x - player.x) / 1000) + player.getPlayerPosOnScreen(width)[0]
@@ -77,3 +81,35 @@ def worldCordToScreen(cord):
 def worldUnitToScreen(unit):
 	global width, height
 	return (width if width < height else height) * (unit / 1000)
+
+
+# Debugging
+def DebugPoint(p1, color=[0, 255, 0], width=5):
+	global win
+	if win != None:
+		pg.draw.circle(win, color, (int(worldXToScreen(p1[0])), int(worldYToScreen(p1[1]))), width, 0)
+	return
+
+def DebugLine(p1, p2, color=[255, 0, 0], thicc=1):
+	global win
+	if win != None:
+		pg.draw.line(win, color, (int(worldXToScreen(p1[0])), int(worldYToScreen(p1[1]))), (int(worldXToScreen(p2[0])), int(worldYToScreen(p2[1]))), thicc)
+	return
+
+def DebugRect(r1, color=[0, 0, 255], width=2):
+	global win
+	if win != None:
+		pg.draw.rect(win, color, (
+			int(worldXToScreen(r1[0])), 
+			int(worldYToScreen(r1[1])), 
+			int(worldXToScreen(r1[2]) - worldXToScreen(r1[0])), 
+			int(worldYToScreen(r1[3]) - worldYToScreen(r1[1]))
+		), width)
+	return
+
+def DebugText(text, p1, s=10, color=[0, 0, 0]):
+	global win
+	TextSurf = pg.font.Font('Fonts/Roboto-Regular.ttf', int(s)).render(str(text), True, color)
+	TextRect = TextSurf.get_rect()
+	TextRect.center = [worldXToScreen(p1[0]), worldYToScreen(p1[1])]
+	win.blit(TextSurf, TextRect)

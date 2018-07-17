@@ -11,14 +11,13 @@ import Map as map
 def create_window(width, height):
 	win = pg.display.set_mode((width, height), pg.RESIZABLE)
 
-	map.docWH(width, height)
-
 	win.fill((255, 255, 255))
 
 	pg.display.set_caption("Program")
 	pg.display.set_icon(pg.image.load("icon.png"))
 
 	pg.display.flip()
+	map.docWH(width, height, win)
 	return win
 
 width, height = 1000, 600
@@ -55,7 +54,6 @@ def main():
 
 		pg.display.update()
 		time.sleep(max(1.0/60 - (time.time() - start), 0))
-
 
 if __name__=="__main__":
 	main()

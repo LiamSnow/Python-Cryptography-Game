@@ -1,4 +1,5 @@
 import math
+import Map as map
 
 # Collision.py
 
@@ -9,7 +10,7 @@ def rectanglesOverlap(r1, r2):
 		r1[1] < r2[3] and
 		r1[3] > r2[1]
 	)
-
+ 
 
 def linesOverlap(x1, y1, x2, y2, x3, y3, x4, y4):
 	try:
@@ -30,7 +31,7 @@ def rectOverlapLine(r1, l1):
 	return overlap
 
 # Returns [directionChar, distance_in_world_units]
-def rectDistance(r1, r2, pg):
+def rectDistance(r1, r2):
 	dir = rectangleDir(r1, r2)
 	if (dir != None):
 		def avg(a, b):
@@ -67,17 +68,41 @@ def rectDistance(r1, r2, pg):
 			# Points [Player, Box]
 			points = [[c[0], yp], [c[1], yp]]
 		
+		#map.DebugPoint(points[0])
+		#map.DebugPoint(points[1])
+		#map.DebugLine(*points)
+
 		dst = math.hypot(points[0][0] - points[1][0], points[0][1] - points[1][1])
 
 		return [dir, dst]
 	return [None, None]
 
 def rectangleDir(r1, r2):
-	def numberOverlap(x1, x2, y1, y2):
-		return max(x1, y1) <= min(x2, y2)
-
+	def numberOverlap(r1s, r1e, r2s, r2e):
+		if (r1s > r1e):
+			t1, t2 = r1s, r1e
+			r1s, r1e = t2, t1
+		if (r2s > r2e):
+			t1, t2 = r2s, r2e
+			r2s, r2e = t2, t1
+		return r1e >= r2s and r2e >= r1s
 	def avg(a, b):
 		return (a + b) / 2
+
+	#map.DebugPoint([r1[0], r1[1]], [255, 0, 0], 2)
+	#map.DebugPoint([r1[2], r1[3]], [255, 100, 0], 2)
+	#map.DebugPoint([r2[0], r2[1]], [0, 0, 255], 2)
+	#map.DebugPoint([r2[2], r2[3]], [0, 100, 255], 2)
+
+	#map.DebugLine([r1[0], -1000], [r1[0], 1000])
+	#map.DebugLine([r1[2], -1000], [r1[2], 1000])
+	#map.DebugLine([r2[0], -1000], [r2[0], 1000])
+	#map.DebugLine([r2[2], -1000], [r2[2], 1000])
+
+	#map.DebugLine([-1000, r1[1]], [1000, r1[1]])
+	#map.DebugLine([-1000, r1[3]], [1000, r1[3]])
+	#map.DebugLine([-1000, r2[1]], [1000, r2[1]])
+	#map.DebugLine([-1000, r2[3]], [1000, r2[3]])
 
 	if (numberOverlap(r1[0], r1[2], r2[0], r2[2])):
 		if (avg(r1[1], r1[3]) > avg(r2[1], r2[3])):
