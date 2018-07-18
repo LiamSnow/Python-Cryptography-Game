@@ -11,11 +11,6 @@ def update():
 	
 	return
 
-def DoorEnter():
-	print("Door Entered")
-	map.setMap("LEVEL3")
-
-
 # Data
 data = [
 	

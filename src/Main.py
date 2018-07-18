@@ -5,6 +5,7 @@ import time
 # Import Files
 import Player as player
 import Map as map
+from Maps import _HUD as HUD
 
 # Main.py
 
@@ -51,6 +52,8 @@ def main():
 
 		if (map.getMap() != "MENU"):
 			player.update(pg, win, width, height)
+			HUD.update(pg, win, width, height)
+
 
 		pg.display.update()
 		time.sleep(max(1.0/60 - (time.time() - start), 0))

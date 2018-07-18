@@ -3,6 +3,8 @@ from Math import Curve as curve
 from Math import Collision as collis
 from Other import Cursors as cursors
 import Map as map
+import pygame as pg
+from Maps import _HUD as HUD
 
 # Map Elements
 
@@ -23,6 +25,123 @@ class ground:
 			map.worldCordToScreen([self.x2, self.y2]),
 			map.worldCordToScreen([self.x1, self.y2])
 		], 0)
+		pg.draw.polygon(win, [0, 0, 0], [
+			map.worldCordToScreen([self.x1, self.y1]),
+			map.worldCordToScreen([self.x2, self.y1]),
+			map.worldCordToScreen([self.x2, self.y2]),
+			map.worldCordToScreen([self.x1, self.y2])
+		], 5)
+		return
+
+class door:
+	def __init__(self, x1, y1, x2, y2, levelName, locked=True):
+		self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
+		self.ln = levelName
+		self.locked = locked
+
+	# Interaction
+	def processInput(self, evt, pg, win, ww, wh):
+		def getKeyPress(key):
+			return (pg.key.get_pressed()[ord(key)])
+
+		if (getKeyPress('e') and not self.locked):
+			map.setMap(self.ln)
+
+		return
+
+	def setLocked(locked=True):
+		self.locked = locked
+	def lock():
+		self.locked = True
+	def unlock():
+		self.locked = False
+
+	# Drawing
+	def update(self, pg, win, ww, wh):
+		pg.draw.polygon(win, [230, 230, 230], [
+			map.worldCordToScreen([self.x1, self.y1]),
+			map.worldCordToScreen([self.x2, self.y1]),
+			map.worldCordToScreen([self.x2, self.y2]),
+			map.worldCordToScreen([self.x1, self.y2])
+		], 0)
+
+		if (self.locked):
+			pg.draw.lines(win, [255, 0, 0], False, [
+				map.worldCordToScreen([self.x1, self.y1]),
+				map.worldCordToScreen([self.x2, self.y2])
+			], 5)
+			pg.draw.lines(win, [255, 0, 0], False, [
+				map.worldCordToScreen([self.x2, self.y1]),
+				map.worldCordToScreen([self.x1, self.y2])
+			], 5)
+
+		pg.draw.lines(win, [0, 0, 0], True, [
+			map.worldCordToScreen([self.x1, self.y1]),
+			map.worldCordToScreen([self.x2, self.y1]),
+			map.worldCordToScreen([self.x2, self.y2]),
+			map.worldCordToScreen([self.x1, self.y2])
+		], 5)
+		pg.draw.circle(
+			win, 
+			[0, 0, 0], 
+			[int(map.worldXToScreen(self.x1 + (self.x2 / 10))), int(map.worldYToScreen((self.y1 + self.y2) / 2))], 
+			int(map.worldUnitToScreen(10)), 
+			0
+		)
+
+		if (collis.simpleRectDistance(player.getCollisionBox(), [self.x1, self.y1, self.x2, self.y2]) < 80):
+			HUD.setMessage("This Door is Locked" if self.locked else "Press E To Enter")
+
+		return
+
+class wall:
+	def __init__(self, x1, y1, x2, y2):
+		self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
+		self.boxPhysics = True
+
+	# Interaction
+	def processInput(self, evt, pg, win, ww, wh):
+		return
+
+	# Drawing
+	def update(self, pg, win, ww, wh):
+		pg.draw.polygon(win, [0, 0, 0], [
+			map.worldCordToScreen([self.x1, self.y1]),
+			map.worldCordToScreen([self.x2, self.y1]),
+			map.worldCordToScreen([self.x2, self.y2]),
+			map.worldCordToScreen([self.x1, self.y2])
+		], 0)
+		pg.draw.polygon(win, [0, 0, 0], [
+			map.worldCordToScreen([self.x1, self.y1]),
+			map.worldCordToScreen([self.x2, self.y1]),
+			map.worldCordToScreen([self.x2, self.y2]),
+			map.worldCordToScreen([self.x1, self.y2])
+		], 5)
+		return
+
+class platform:
+	def __init__(self, x1, y1, x2, y2):
+		self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
+		self.boxPhysics = True
+
+	# Interaction
+	def processInput(self, evt, pg, win, ww, wh):
+		return
+
+	# Drawing
+	def update(self, pg, win, ww, wh):
+		pg.draw.polygon(win, [0, 0, 0], [
+			map.worldCordToScreen([self.x1, self.y1]),
+			map.worldCordToScreen([self.x2, self.y1]),
+			map.worldCordToScreen([self.x2, self.y2]),
+			map.worldCordToScreen([self.x1, self.y2])
+		], 0)
+		pg.draw.polygon(win, [0, 0, 0], [
+			map.worldCordToScreen([self.x1, self.y1]),
+			map.worldCordToScreen([self.x2, self.y1]),
+			map.worldCordToScreen([self.x2, self.y2]),
+			map.worldCordToScreen([self.x1, self.y2])
+		], 5)
 		return
 
 class button:
@@ -78,7 +197,7 @@ class button:
 			self.y * wh + (buttonOff * curve.curve(self.clickAnim)), 
 			self.w * ww - (buttonOff), 
 			self.h * wh - (buttonOff)
-		], 1)
+		], 5)
 		# Higher (Top Left)
 		pg.draw.rect(win, [255, 255, 255], [
 			self.x * ww, 
@@ -91,7 +210,7 @@ class button:
 			self.y * wh, 
 			self.w * ww - (buttonOff), 
 			self.h * wh - (buttonOff)
-		], 1)
+		], 5)
 
 		# Text
 		TextSurf = pg.font.Font('Fonts/Roboto-Regular.ttf', int((self.w * ww * 0.02 if (self.w * ww < self.h * wh) else self.h * wh * 0.03) * len(self.txt))).render(self.txt, True, [0, 0, 0])

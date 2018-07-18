@@ -117,3 +117,13 @@ def rectangleDir(r1, r2):
 			return 'E'
 
 	return
+
+def simpleRectDistance(r1, r2):
+	def avg(a, b):
+		return (a + b) / 2
+	
+	p1 = [avg(r1[0], r1[2]), avg(r1[1], r1[3])]
+	p2 = [avg(r2[0], r2[2]), avg(r2[1], r2[3])]
+
+	return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+

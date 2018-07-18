@@ -13,6 +13,17 @@ def update():
 
 # Data
 data = [
-	elements.ground(-1000, 30, 1000, 0),
-	elements.ground(0, 230, 100, 200)
+	# Floor
+	elements.ground(-200, 0, 1800, 30),
+
+	# Walls
+	elements.wall(-200, 30, -170, 500),
+	elements.wall(1800, 30, 1770, 500),
+
+	# Platforms
+	elements.platform(200, 200, 400, 230),
+	elements.platform(600, 300, 800, 330),
+
+	# Door
+	elements.door(650, 500, 750, 330, "LEVEL2", False)
 ]

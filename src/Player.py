@@ -10,8 +10,21 @@ xm, ym = 0, 0
 size = (30, 120)
 movementSpeed = 1
 jumpCount = 0
+facingRight = True
 
-image = pg.image.load('Images/StickFigure.png')
+images = {
+		
+}
+
+imagenames = [
+	("idle", 1),
+	("run", 11)
+]
+
+for fold in imagenames:
+	images[fold[0]] = []
+	for file in range(1, fold[1] + 1):
+		images[fold[0]].append(pg.image.load('Images/StickFigure/Animations/' + fold[0] + '_' + ("%02d" % file) + '.png'))	
 
 calcCol = {}
 def processCollision():
@@ -21,13 +34,26 @@ def processCollision():
 	return
 
 def processSpeed():
-	global x, y, xm, ym, jumpCount
+	global x, y, xm, ym, jumpCount, facingRight, anim
 
 	def incrs(a, b):
 		return a + (b if a >= 0 else -b)
 
 	if ((calcCol["E"] - xm) > 1 if xm > 0 else (calcCol["W"] + xm) > 1):
 		x += xm
+		if (xm != 0):
+			facingRight = (xm > 0)
+			if (anim["name"] != "run"):
+				anim = {
+					"name": "run",
+					"frame": 0
+				}
+		else:
+			if (anim["name"] != "idle"):
+				anim = {
+					"name": "idle",
+					"frame": 0
+				}
 
 	if ((calcCol["N"] - ym) > 1 if ym > 0 else (calcCol["S"] + ym) > 1):
 		y += ym
@@ -69,19 +95,43 @@ def processInput(pg, win, ww, wh):
 	return
 
 drawnPosOnScreen = []
+anim = {
+	"name": "idle",
+	"frame": 0
+}
 def update(pg, win, ww, wh):
 	processCollision()
 	processInput(pg, win, ww, wh)
 	processSpeed()
-	global x, y, image, size, drawnPosOnScreen
+	global x, y, size, drawnPosOnScreen, images, facingRight
 
 	pos = getPlayerPosOnScreen(ww, True)
 	ps = (pos[2], pos[3])
-	win.blit(pg.transform.scale(image, (pos[3], pos[3])), ( int((ww / 2) - (ps[1] / 2)), int(map.worldYToScreen(y)), ps[0], ps[1] ))
 
+	#print((len(images[anim["name"]]), round(anim["frame"])))
+
+	cimg = images[anim["name"]][round(anim["frame"])]
+	cimgscalingd = 1 * (cimg.get_width() if cimg.get_width() >  cimg.get_height() else cimg.get_height())
+	cimg = pg.transform.scale(cimg, (int(pos[3] * (cimg.get_width() / cimgscalingd)), int(pos[3] * (cimg.get_height() / cimgscalingd))))
+	cimg = pg.transform.flip(cimg, not facingRight, False)
+	#cimg.fill([0, 0, 0])
+	win.blit(
+		cimg,
+		( int((ww / 2) - (ps[1] / 2)), int(map.worldYToScreen(y)), ps[0], ps[1] )
+	)
+
+	anim["frame"] += 0.5
+	if anim["frame"] >= len(images[anim["name"]]) - 1:
+		anim["frame"] = 0
+	
+	# Debug Collision Box
 	#pg.draw.rect(win, [0, 0, 255], getPlayerPosOnScreen(ww), 1)
 
 	return
+
+def getImage(row, col):
+	global images
+	return images[(col * 11) + row]
 
 def getPlayerPosOnScreen(ww, image=False):
 	global size
