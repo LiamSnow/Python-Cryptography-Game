@@ -5,12 +5,13 @@ import time
 # Player.py
 
 # In Percent (no decimal)
-x, y = 0, 0
+x, y = 0, 500
 xm, ym = 0, 0
 size = (30, 120)
 movementSpeed = 1
 jumpCount = 0
 facingRight = True
+inUi = False
 
 images = {
 		
@@ -68,7 +69,7 @@ def processSpeed():
 	return
 
 def processInput(pg, win, ww, wh):
-	global x, y, xm, ym, movementSpeed, jumpCount
+	global x, y, xm, ym, movementSpeed, jumpCount, inUi
 		
 	movementSpeed = 3
 
@@ -76,7 +77,7 @@ def processInput(pg, win, ww, wh):
 		return (pg.key.get_pressed()[ord(key)])
 
 
-	if (getKeyPress('a') or getKeyPress('d')):
+	if ((getKeyPress('a') or getKeyPress('d')) and not inUi):
 		# Left
 		if (getKeyPress('a')):
 			xm = -movementSpeed
@@ -88,7 +89,7 @@ def processInput(pg, win, ww, wh):
 		xm = 0
 	
 	#Jump
-	if (getKeyPress('w') and jumpCount < 5):
+	if ((getKeyPress('w') and jumpCount < 5) and not inUi):
 		ym = 12
 		jumpCount += 1
 

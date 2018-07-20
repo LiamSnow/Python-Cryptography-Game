@@ -5,17 +5,25 @@ import Player as player
 import Main as main
 import pygame as pg
 
+
+
+# Maps
 from Maps import MENU
 from Maps import LEVEL1
 from Maps import LEVEL2
+from Maps import LEVEL3
+
+
 
 # Map Stuff
-cm = "MENU"
+#cm = "MENU"
+cm = "LEVEL2"
 mapObjects = globals()[cm].data
 
 def setMap(map):
 	global cm, mapObjects
 	player.x, player.y = 0, 500
+	player.inUi = False
 	cm = map
 	mapObjects = globals()[cm].data
 	return
@@ -82,12 +90,31 @@ def worldUnitToScreen(unit):
 	global width, height
 	return (width if width < height else height) * (unit / 1000)
 
+#def screenXToWorld(x):
+#	global width, height
+#	return (((x / (width if width < height else height)) - player.getPlayerPosOnScreen(width)[0]) * 1000) + player.x
+#
+#def screenYToWorld(y):
+#	global width, height
+#	return (((y / (width if width < height else height)) * 1000) - (height / 1.1)) * -1
+#
+#def screenCordToWorld(cord):
+#	global width, height
+#	return [screenXToWorld(cord[0]), screenYToWorld(cord[1])]
+
 
 # Debugging
-def DebugPoint(p1, color=[0, 255, 0], width=5):
+def DebugPoint(p1, color=[0, 255, 0], width=5, WC=True):
 	global win
 	if win != None:
-		pg.draw.circle(win, color, (int(worldXToScreen(p1[0])), int(worldYToScreen(p1[1]))), width, 0)
+		if WC:
+			x = int(worldXToScreen(p1[0]))
+			y = int(worldYToScreen(p1[1]))
+		else:
+			x = int(p1[0])
+			y = int(p1[1])
+
+		pg.draw.circle(win, color, (x, y), width, 0)
 	return
 
 def DebugLine(p1, p2, color=[255, 0, 0], thicc=1):

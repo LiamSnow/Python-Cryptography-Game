@@ -5,10 +5,8 @@ import Map as map
 
 def rectanglesOverlap(r1, r2):
 	return (
-		r1[0] < r2[2] and
-		r1[2] > r2[0] and
-		r1[1] < r2[3] and
-		r1[3] > r2[1]
+		numberOverlap(r1[0], r1[2], r2[0], r2[2]) and
+		numberOverlap(r1[1], r1[3], r2[1], r2[3])
 	)
  
 
@@ -126,4 +124,13 @@ def simpleRectDistance(r1, r2):
 	p2 = [avg(r2[0], r2[2]), avg(r2[1], r2[3])]
 
 	return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+def numberOverlap(r1s, r1e, r2s, r2e):
+		if (r1s > r1e):
+			t1, t2 = r1s, r1e
+			r1s, r1e = t2, t1
+		if (r2s > r2e):
+			t1, t2 = r2s, r2e
+			r2s, r2e = t2, t1
+		return r1e >= r2s and r2e >= r1s
 
