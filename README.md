@@ -1,5 +1,7 @@
 # Python Cryptography Game
 
+![Image of Game](/src/Capture.PNG)
+
 #### Running
 
 1) Clone or Download This Repo
