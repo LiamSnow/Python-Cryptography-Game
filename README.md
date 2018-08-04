@@ -10,4 +10,8 @@
 
 3) Enter The "src" directory
 
+4) Make sure you have Python 3 installed
+
+5) Install pygame with ```pip install pygame```
+
 4) Run "Main.py" with ```python Main.py```
