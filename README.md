@@ -1,4 +1,5 @@
 # Python Cryptography Game
+A pretty simple python platformer involving cryptography.
 
 ![Image of Game](/src/Capture.PNG)
 
