@@ -16,8 +16,8 @@ from Maps import LEVEL3
 
 
 # Map Stuff
-#cm = "MENU"
-cm = "LEVEL2"
+cm = "MENU"
+#cm = "LEVEL2"
 mapObjects = globals()[cm].data
 
 def setMap(map):
